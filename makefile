@@ -1,14 +1,17 @@
 PROJECT_NAME=ctc
 
 CC?=clang
-CFLAGS+=-Wall -std=c11
+CFLAGS+=-Wall -std=c11 -Iinclude
 
 BUILD_DIR?=build
 SOURCE_DIR?=src
 
 # basic targets
-main: mkBuildDir
-	${CC} ${CFLAGS} -o ${BUILD_DIR}/${PROJECT_NAME} ${SOURCE_DIR}/main.c
+tests: dynarray_demo
 
 mkBuildDir:
 	if [ ! -d ${BUILD_DIR} ]; then mkdir ${BUILD_DIR}; fi
+
+# tests
+dynarray_demo: mkBuildDir
+	${CC} ${CFLAGS} -o ${BUILD_DIR}/dynarray_demo ${SOURCE_DIR}/dynarray_demo.c
