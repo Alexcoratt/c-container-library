@@ -17,7 +17,7 @@
 #include <stddef.h>
 #include <string.h>
 
-#define DEFINE_DYN_ARRAY(T, ERR_VALUE) \
+#define DECLARE_DYN_ARRAY(T) \
 struct __dyn_array_##T; \
 \
 struct __dyn_array_methods_##T { \
@@ -50,6 +50,35 @@ typedef struct __dyn_array_##T { \
     size_t maxSize; \
     T *values; \
 } DynArray_##T; \
+\
+/* basic methods */ \
+void __dyn_array_term_##T(struct __dyn_array_##T *); \
+\
+/* value access */ \
+T *__dyn_array_at_##T(struct __dyn_array_##T *, size_t index); \
+T *__dyn_array_at_no_range_check_##T(struct __dyn_array_##T *, size_t index); \
+\
+T *__dyn_array_front_##T(struct __dyn_array_##T *); \
+T *__dyn_array_back_##T(struct __dyn_array_##T *); \
+\
+/* getting */ \
+T __dyn_array_get_##T(const struct __dyn_array_##T *arr, size_t index); \
+T __dyn_array_get_no_range_check_##T(const struct __dyn_array_##T *, size_t index); \
+\
+size_t __dyn_array_size_##T(const struct __dyn_array_##T *); \
+\
+/* setting */ \
+void __dyn_array_resize_##T(struct __dyn_array_##T *, size_t newSize); \
+\
+void __dyn_array_push_back_##T(struct __dyn_array_##T *, T value); \
+T __dyn_array_pop_back_##T(struct __dyn_array_##T *); \
+\
+extern const struct __dyn_array_methods_##T methods_dyn_array_##T; \
+\
+void initDynArray_##T(struct __dyn_array_##T *arr, size_t size, const T *values);
+
+#define DEFINE_DYN_ARRAY(T, ERR_VALUE) \
+DECLARE_DYN_ARRAY(T) \
 \
 /* basic methods */ \
 void __dyn_array_term_##T(struct __dyn_array_##T *arr) { \
@@ -116,7 +145,7 @@ T __dyn_array_pop_back_##T(struct __dyn_array_##T *arr) { \
     return res; \
 } \
 \
-static const struct __dyn_array_methods_##T dyn_array_##T##_methods = { \
+const struct __dyn_array_methods_##T methods_dyn_array_##T = { \
     __dyn_array_term_##T, \
     __dyn_array_at_##T, \
     __dyn_array_at_no_range_check_##T, \
@@ -135,7 +164,7 @@ void initDynArray_##T(struct __dyn_array_##T *arr, size_t size, const T *values)
     arr->maxSize = size * DYN_ARRAY_MAX_SIZE_RATIO; \
     arr->maxSize = MAX(arr->maxSize, DYN_ARRAY_MIN_SIZE); \
     arr->values = (T *)malloc(arr->maxSize * sizeof(T)); \
-    arr->methods = &dyn_array_##T##_methods; \
+    arr->methods = &methods_dyn_array_##T; \
     \
     if (values != NULL) \
         memcpy(arr->values, values, size * sizeof(T)); \
