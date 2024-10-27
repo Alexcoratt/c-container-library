@@ -11,14 +11,14 @@ void initDynamicArray(DynamicArray *darr, size_t size, size_t typeSize, GetMaxSi
     darr->getMaxSize = getMaxSize;
 
     darr->maxSize = getMaxSize(size);
-    darr->values = malloc(getDynamicArrayMaxByteSize(darr));
+    darr->values = malloc(getMaxByteSizeDynamicArray(darr));
 }
 
-size_t getDynamicArrayMaxByteSize(const DynamicArray *darr) {
+size_t getMaxByteSizeDynamicArray(const DynamicArray *darr) {
     return darr->maxSize * darr->typeSize * sizeof(char);
 }
 
-size_t getDynamicArrayByteSize(const DynamicArray *darr) {
+size_t getByteSizeDynamicArray(const DynamicArray *darr) {
     return darr->size * darr->typeSize * sizeof(char);
 }
 
@@ -27,98 +27,98 @@ void termDynamicArray(DynamicArray *darr) {
 }
 
 void mapDynamicArray(DynamicArray *darr, ProcessItemFunc func) {
-    const size_t size = getDynamicArraySize(darr);
+    const size_t size = getSizeDynamicArray(darr);
     for (size_t i = 0; i < size; ++i)
-        func(atDynamicArrayNoRangeCheck(darr, i));
+        func(atNoRangeCheckDynamicArray(darr, i));
 }
 
-size_t getDynamicArraySize(const DynamicArray *darr) {
+size_t getSizeDynamicArray(const DynamicArray *darr) {
     return darr->size;
 }
 
-size_t getDynamicArrayMaxSize(const DynamicArray *darr) {
+size_t getMaxSizeDynamicArray(const DynamicArray *darr) {
     return darr->maxSize;
 }
 
-void *atDynamicArrayNoRangeCheck(DynamicArray *darr, size_t index) {
+void *atNoRangeCheckDynamicArray(DynamicArray *darr, size_t index) {
     return ((char *)darr->values) + index * darr->typeSize;
 }
 
-void *getDynamicArrayBack(DynamicArray *darr) {
+void *atBackDynamicArray(DynamicArray *darr) {
     return atDynamicArray(darr, darr->size - 1);
 }
 
-void *getDynamicArrayFront(DynamicArray *darr) {
+void *atFrontDynamicArray(DynamicArray *darr) {
     return atDynamicArray(darr, 0);
 }
 
 void *atDynamicArray(DynamicArray *darr, size_t index) {
     if (index < darr->size)
-        return atDynamicArrayNoRangeCheck(darr, index);
+        return atNoRangeCheckDynamicArray(darr, index);
     return NO_VALUE;
 }
 
-const void *getDynamicArrayConstBack(const DynamicArray *darr) {
+const void *atBackConstDynamicArray(const DynamicArray *darr) {
     return atConstDynamicArray(darr, darr->size - 1);
 }
 
-const void *getDynamicArrayConstFront(const DynamicArray *darr) {
+const void *atFrontConstDynamicArray(const DynamicArray *darr) {
     return atConstDynamicArray(darr, 0);
 }
 
 const void *atConstDynamicArray(const DynamicArray *darr, size_t index) {
     if (index < darr->size)
-        return atConstDynamicArrayNoRangeCheck(darr, index);
+        return atNoRangeCheckConstDynamicArray(darr, index);
     return NO_VALUE;
 }
 
-const void *atConstDynamicArrayNoRangeCheck(const DynamicArray *darr, size_t index) {
+const void *atNoRangeCheckConstDynamicArray(const DynamicArray *darr, size_t index) {
     return ((const char *)darr->values) + index * darr->typeSize;
 }
 
-bool isDynamicArrayEmpty(const DynamicArray *darr) {
+bool isEmptyDynamicArray(const DynamicArray *darr) {
     return darr->size == 0;
 }
 
-void setDynamicArrayValue(DynamicArray *darr, size_t index, const void *value) {
+void setValueDynamicArray(DynamicArray *darr, size_t index, const void *value) {
     if (index < darr->size)
-        setDynamicArrayValueNoRangeCheck(darr, index, value);
+        setValueNoRangeCheckDynamicArray(darr, index, value);
 }
 
-void setDynamicArrayValueNoRangeCheck(DynamicArray *darr, size_t index, const void *value) {
+void setValueNoRangeCheckDynamicArray(DynamicArray *darr, size_t index, const void *value) {
     memcpy(
-        atDynamicArrayNoRangeCheck(darr, index),
+        atNoRangeCheckDynamicArray(darr, index),
         value,
         darr->typeSize
     );
 }
 
 void popBackDynamicArray(DynamicArray *darr) {
-    if (!isDynamicArrayEmpty(darr))
+    if (!isEmptyDynamicArray(darr))
         resizeDynamicArray(darr, darr->size - 1);
 }
 
 void pushBackDynamicArray(DynamicArray *darr, const void *value) {
     resizeDynamicArray(darr, darr->size + 1);
-    setDynamicArrayBackValue(darr, value);
+    setBackValueDynamicArray(darr, value);
 }
 
 void resizeDynamicArray(DynamicArray *darr, size_t newSize) {
     darr->size = newSize;
     if (newSize > darr->maxSize) {
         darr->maxSize = darr->getMaxSize(newSize);
-        darr->values = realloc(darr->values, getDynamicArrayMaxByteSize(darr));
+        darr->values = realloc(darr->values, getMaxByteSizeDynamicArray(darr));
     }
 }
 
-void setDynamicArrayBackValue(DynamicArray *darr, const void *value) {
-    if (!isDynamicArrayEmpty(darr))
-        setDynamicArrayValueNoRangeCheck(darr, darr->size - 1, value);
+void setBackValueDynamicArray(DynamicArray *darr, const void *value) {
+    if (!isEmptyDynamicArray(darr))
+        setValueNoRangeCheckDynamicArray(darr, darr->size - 1, value);
 }
 
-void setDynamicArrayFrontValue(DynamicArray *darr, const void *value) {
-    if (!isDynamicArrayEmpty(darr))
-        setDynamicArrayValueNoRangeCheck(darr, 0, value);
+void setFrontValueDynamicArray(DynamicArray *darr, const void *value) {
+    if (!isEmptyDynamicArray(darr))
+        setValueNoRangeCheckDynamicArray(darr, 0, value);
 }
 
 // default implementations

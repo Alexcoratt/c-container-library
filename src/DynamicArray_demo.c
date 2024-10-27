@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
 
     puts("----- Dynamic array cleaning -----");
     for (int i = 0; i < argc; ++i) {
-        delString(*(String *)getDynamicArrayBack(&darr));
+        delString(*(String *)atBackDynamicArray(&darr));
         popBackDynamicArray(&darr);
 
         printf("Iteration %d:\n", i + 1);

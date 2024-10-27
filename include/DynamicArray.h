@@ -25,34 +25,34 @@ void termDynamicArray(DynamicArray *);
 
 // value access
 void *atDynamicArray(DynamicArray *, size_t index);
-void *atDynamicArrayNoRangeCheck(DynamicArray *, size_t index);
+void *atNoRangeCheckDynamicArray(DynamicArray *, size_t index);
 
 const void *atConstDynamicArray(const DynamicArray *, size_t index);
-const void *atConstDynamicArrayNoRangeCheck(const DynamicArray *, size_t index);
+const void *atNoRangeCheckConstDynamicArray(const DynamicArray *, size_t index);
 
-void *getDynamicArrayFront(DynamicArray *);
-void *getDynamicArrayBack(DynamicArray *);
+void *atFrontDynamicArray(DynamicArray *);
+void *atBackDynamicArray(DynamicArray *);
 
-const void *getConstDynamicArrayFront(const DynamicArray *);
-const void *getConstDynamicArrayBack(const DynamicArray *);
+const void *atFrontConstDynamicArray(const DynamicArray *);
+const void *atBackConstDynamicArray(const DynamicArray *);
 
 // getting
-size_t getDynamicArraySize(const DynamicArray *);
-size_t getDynamicArrayMaxSize(const DynamicArray *);
+size_t getSizeDynamicArray(const DynamicArray *);
+size_t getMaxSizeDynamicArray(const DynamicArray *);
 
-size_t getDynamicArrayByteSize(const DynamicArray *);
-size_t getDynamicArrayMaxByteSize(const DynamicArray *);
+size_t getByteSizeDynamicArray(const DynamicArray *);
+size_t getMaxByteSizeDynamicArray(const DynamicArray *);
 
-bool isDynamicArrayEmpty(const DynamicArray *);
+bool isEmptyDynamicArray(const DynamicArray *);
 
 // setting
 void resizeDynamicArray(DynamicArray *, size_t newSize);
 
-void setDynamicArrayValue(DynamicArray *, size_t index, const void *value);
-void setDynamicArrayValueNoRangeCheck(DynamicArray *, size_t index, const void *value);
+void setValueDynamicArray(DynamicArray *, size_t index, const void *value);
+void setValueNoRangeCheckDynamicArray(DynamicArray *, size_t index, const void *value);
 
 void setDynamicArrayFrontValue(DynamicArray *, const void *value);
-void setDynamicArrayBackValue(DynamicArray *, const void *value);
+void setBackValueDynamicArray(DynamicArray *, const void *value);
 
 void pushBackDynamicArray(DynamicArray *, const void *value);
 void popBackDynamicArray(DynamicArray *);
