@@ -1,12 +1,6 @@
 #ifndef DYNAMIC_ARRAY_H
 #define DYNAMIC_ARRAY_H
 
-// TEST
-// ---
-#define DYNAMIC_ARRAY_USER_DEFINED_VALUE_TYPE
-#define DYNAMIC_ARRAY_VALUE_TYPE int
-// ---
-
 #include <stddef.h>
 #include <stdbool.h>
 #include "auxillary_macros.h"
@@ -15,6 +9,10 @@ typedef void (*ProcessItemFunc)(void *);
 typedef size_t (*GetMaxSizeFunc)(size_t currentSize);
 
 #define DEFAULT_DYNAMIC_ARRAY DynamicArray
+
+#ifdef DYNAMIC_ARRAY_VALUE_TYPE
+    #define DYNAMIC_ARRAY_USER_DEFINED_VALUE_TYPE
+#endif
 
 #ifdef DYNAMIC_ARRAY_USER_DEFINED_VALUE_TYPE
     #define DYNAMIC_ARRAY CONCAT_MACROS(CONCAT_MACROS(DEFAULT_DYNAMIC_ARRAY, _), DYNAMIC_ARRAY_VALUE_TYPE)

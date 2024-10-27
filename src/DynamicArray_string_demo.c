@@ -2,17 +2,18 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "type_definitions.h"
+
+#define DYNAMIC_ARRAY_VALUE_TYPE string
 #include "DynamicArray.h"
 
-typedef char *String;
-
 void printItem(void *itemPtr) {
-    printf("\"%s\" ", *(String *)itemPtr);
+    printf("\"%s\" ", *(string *)itemPtr);
 }
 
-void printDynamicArray(const char *name, DynamicArray *darr) {
+void printDynamicArray(const char *name, DynamicArray_string *darr) {
     puts(name);
-    mapDynamicArray(darr, printItem);
+    mapDynamicArray_string(darr, printItem);
     putchar('\n');
 }
 
@@ -33,13 +34,13 @@ void delString(char *str) {
 int main(int argc, char **argv) {
     const char dynamicArrayName[] = "DynamicArray";
 
-    DynamicArray darr;
-    initDynamicArray(&darr, 0, sizeof(String), getMaxSizeDefaultImpl);
+    DynamicArray_string darr;
+    initDynamicArray_string(&darr, 0, getMaxSizeDefaultImpl);
 
     puts("----- Dynamic array filling -----");
     for (int i = 0; i < argc; ++i) {
         char *str = allocString(argv[i]);
-        pushBackDynamicArray(&darr, &str);
+        pushBackDynamicArray_string(&darr, &str);
 
         printf("Iteration %d:\n", i + 1);
         printDynamicArray(dynamicArrayName, &darr);
@@ -47,14 +48,14 @@ int main(int argc, char **argv) {
 
     puts("----- Dynamic array cleaning -----");
     for (int i = 0; i < argc; ++i) {
-        delString(*(String *)getDynamicArrayBack(&darr));
-        popBackDynamicArray(&darr);
+        delString(*atBackDynamicArray_string(&darr));
+        popBackDynamicArray_string(&darr);
 
         printf("Iteration %d:\n", i + 1);
         printDynamicArray(dynamicArrayName, &darr);
     }
 
-    termDynamicArray(&darr);
+    termDynamicArray_string(&darr);
 
     return 0;
 }
