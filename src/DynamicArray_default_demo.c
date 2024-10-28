@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "default_functions_impl.h"
 #include "DynamicArray.h"
 
 void printItem(void *itemPtr) {

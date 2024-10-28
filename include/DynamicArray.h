@@ -81,7 +81,4 @@ void DYNAMIC_ARRAY_FUNCTION(popBack)(DYNAMIC_ARRAY *);
 // special
 void DYNAMIC_ARRAY_FUNCTION(map)(DYNAMIC_ARRAY *, ProcessItemFunc func);
 
-// default implementations
-size_t getMaxSizeDefaultImpl(size_t currentSize);
-
 #endif
