@@ -20,7 +20,7 @@
 
 int hash(const char *);
 void printInt(int *);
-void printDouble(double *);
+void printDouble(void *);
 void printString(string *);
 
 int main(int argc, char **argv) {
@@ -44,13 +44,13 @@ int main(int argc, char **argv) {
 
         printf("iter %d:\n", i);
         
-        mapDynamicArray_int(&hashes, (ProcessItemFunc)printInt);
+        mapDynamicArray_int(&hashes, printInt);
         putchar('\n');
 
-        mapDynamicArray(&sineArray, (ProcessItemFunc)printDouble);
+        mapDynamicArray(&sineArray, printDouble);
         putchar('\n');
 
-        mapDynamicArray_string(&strings, (ProcessItemFunc)printString);
+        mapDynamicArray_string(&strings, printString);
         putchar('\n');
     }
 
@@ -61,14 +61,14 @@ int main(int argc, char **argv) {
 
         printf("iter %d:\n", i);
 
-        mapDynamicArray_int(&hashes, (ProcessItemFunc)printInt);
+        mapDynamicArray_int(&hashes, printInt);
         putchar('\n');
 
-        mapDynamicArray_string(&strings, (ProcessItemFunc)printString);
+        mapDynamicArray_string(&strings, printString);
         putchar('\n');
     }
 
-    mapDynamicArray(&sineArray, (ProcessItemFunc)printDouble);
+    mapDynamicArray(&sineArray, printDouble);
     putchar('\n');
 
     termDynamicArray_int(&hashes);
@@ -86,5 +86,5 @@ int hash(const char *str) {
 }
 
 void printInt(int *value) { printf("%d ", *value); }
-void printDouble(double *value) { printf("%lf ", *value); }
+void printDouble(void *value) { printf("%lf ", *(double *)value); }
 void printString(string *value) { printf("\"%s\" ", *value); }

@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stdlib.h>
 
 #ifndef DYNAMIC_ARRAY_USER_DEFINED_VALUE_TYPE
@@ -6,9 +7,11 @@
 
 #include "DynamicArray.h"
 
+typedef DYNAMIC_ARRAY_VALUE_TYPE value_t;
+
 // DynamicArray functions
 #ifdef DYNAMIC_ARRAY_USER_DEFINED_VALUE_TYPE
-    void DYNAMIC_ARRAY_FUNCTION(init)(DYNAMIC_ARRAY *darr, size_t size, GetMaxSizeFunc getMaxSize) {
+    DYNAMIC_ARRAY_METHOD(void, init, size_t size, GetMaxSizeFunc getMaxSize) {
         darr->size = size;
         darr->getMaxSize = getMaxSize;
 
@@ -16,10 +19,10 @@
         darr->values = malloc(DYNAMIC_ARRAY_FUNCTION(getMaxByteSize)(darr));
     }
 
-    #define DYNAMIC_ARRAY_VALUE_TYPE_SIZE(DARR_PTR) sizeof(DYNAMIC_ARRAY_VALUE_TYPE)
+    #define VALUE_TYPE_SIZE(DARR_PTR) sizeof(value_t)
 
 #else
-    void initDynamicArray(DynamicArray *darr, size_t size, size_t typeSize, GetMaxSizeFunc getMaxSize) {
+    DYNAMIC_ARRAY_METHOD(void, init, size_t size, size_t typeSize, GetMaxSizeFunc getMaxSize) {
         darr->size = size;
         darr->typeSize = typeSize;
 
@@ -29,38 +32,31 @@
         darr->values = malloc(DYNAMIC_ARRAY_FUNCTION(getMaxByteSize)(darr));
     }
 
-    #define DYNAMIC_ARRAY_VALUE_TYPE_SIZE(DARR_PTR) DARR_PTR->typeSize * sizeof(char)
+    #define VALUE_TYPE_SIZE(DARR_PTR) DARR_PTR->typeSize * sizeof(char)
 
 #endif
 
-size_t DYNAMIC_ARRAY_FUNCTION(getMaxByteSize)(const DYNAMIC_ARRAY *darr) {
-    return darr->maxSize * DYNAMIC_ARRAY_VALUE_TYPE_SIZE(darr);
+DYNAMIC_ARRAY_CONST_METHOD(size_t, getMaxByteSize) {
+    return darr->maxSize * VALUE_TYPE_SIZE(darr);
 }
 
-size_t DYNAMIC_ARRAY_FUNCTION(getByteSize)(const DYNAMIC_ARRAY *darr) {
-    return darr->size * DYNAMIC_ARRAY_VALUE_TYPE_SIZE(darr);
+DYNAMIC_ARRAY_CONST_METHOD(size_t, getByteSize) {
+    return darr->size * VALUE_TYPE_SIZE(darr);
 }
 
-void DYNAMIC_ARRAY_FUNCTION(term)(DYNAMIC_ARRAY *darr) {
-    free(darr->values);
-}
+DYNAMIC_ARRAY_METHOD(void, term) { free(darr->values); }
 
 // TODO: send to the end of the file
-void DYNAMIC_ARRAY_FUNCTION(map)(DYNAMIC_ARRAY *darr, ProcessItemFunc func) {
+void DYNAMIC_ARRAY_FUNCTION(map)(DYNAMIC_ARRAY *darr, void (*func)(value_t *)) {
     const size_t size = DYNAMIC_ARRAY_FUNCTION(getSize)(darr);
     for (size_t i = 0; i < size; ++i)
         func(DYNAMIC_ARRAY_FUNCTION(atNoRangeCheck)(darr, i));
 }
 
-size_t DYNAMIC_ARRAY_FUNCTION(getSize)(const DYNAMIC_ARRAY *darr) {
-    return darr->size;
-}
+DYNAMIC_ARRAY_CONST_METHOD(size_t, getSize) { return darr->size; }
+DYNAMIC_ARRAY_CONST_METHOD(size_t, getMaxSize) { return darr->maxSize; }
 
-size_t DYNAMIC_ARRAY_FUNCTION(getMaxSize)(const DYNAMIC_ARRAY *darr) {
-    return darr->maxSize;
-}
-
-DYNAMIC_ARRAY_VALUE_TYPE *DYNAMIC_ARRAY_FUNCTION(atNoRangeCheck)(DYNAMIC_ARRAY *darr, size_t index) {
+DYNAMIC_ARRAY_METHOD(value_t *, atNoRangeCheck, size_t index) {
 #ifdef DYNAMIC_ARRAY_USER_DEFINED_VALUE_TYPE
     return darr->values + index;
 #else
@@ -68,35 +64,35 @@ DYNAMIC_ARRAY_VALUE_TYPE *DYNAMIC_ARRAY_FUNCTION(atNoRangeCheck)(DYNAMIC_ARRAY *
 #endif
 }
 
-DYNAMIC_ARRAY_VALUE_TYPE *DYNAMIC_ARRAY_FUNCTION(atBack)(DYNAMIC_ARRAY *darr) {
+DYNAMIC_ARRAY_METHOD(value_t *, atBack) {
     return DYNAMIC_ARRAY_FUNCTION(at)(darr, darr->size - 1);
 }
 
-DYNAMIC_ARRAY_VALUE_TYPE *DYNAMIC_ARRAY_FUNCTION(atFront)(DYNAMIC_ARRAY *darr) {
+DYNAMIC_ARRAY_METHOD(value_t *, atFront) {
     return DYNAMIC_ARRAY_FUNCTION(at)(darr, 0);
 }
 
-DYNAMIC_ARRAY_VALUE_TYPE *DYNAMIC_ARRAY_FUNCTION(at)(DYNAMIC_ARRAY *darr, size_t index) {
+DYNAMIC_ARRAY_METHOD(value_t *, at, size_t index) {
     if (index < darr->size)
         return DYNAMIC_ARRAY_FUNCTION(atNoRangeCheck)(darr, index);
     return NO_VALUE;
 }
 
-const DYNAMIC_ARRAY_VALUE_TYPE *DYNAMIC_ARRAY_FUNCTION(atBackConst)(const DYNAMIC_ARRAY *darr) {
+DYNAMIC_ARRAY_CONST_METHOD(const value_t *, atBackConst) {
     return DYNAMIC_ARRAY_FUNCTION(atConst)(darr, darr->size - 1);
 }
 
-const DYNAMIC_ARRAY_VALUE_TYPE *DYNAMIC_ARRAY_FUNCTION(atFrontConst)(const DYNAMIC_ARRAY *darr) {
+DYNAMIC_ARRAY_CONST_METHOD(const value_t *, atFrontConst) {
     return DYNAMIC_ARRAY_FUNCTION(atConst)(darr, 0);
 }
 
-const DYNAMIC_ARRAY_VALUE_TYPE *DYNAMIC_ARRAY_FUNCTION(atConst)(const DYNAMIC_ARRAY *darr, size_t index) {
+DYNAMIC_ARRAY_CONST_METHOD(const value_t *, atConst, size_t index) {
     if (index < darr->size)
         return DYNAMIC_ARRAY_FUNCTION(atNoRangeCheckConst)(darr, index);
     return NO_VALUE;
 }
 
-const DYNAMIC_ARRAY_VALUE_TYPE *DYNAMIC_ARRAY_FUNCTION(atNoRangeCheckConst)(const DYNAMIC_ARRAY *darr, size_t index) {
+DYNAMIC_ARRAY_CONST_METHOD(const value_t *, atNoRangeCheckConst, size_t index) {
 #ifdef DYNAMIC_ARRAY_USER_DEFINED_VALUE_TYPE
     return darr->values + index;
 #else
@@ -104,16 +100,16 @@ const DYNAMIC_ARRAY_VALUE_TYPE *DYNAMIC_ARRAY_FUNCTION(atNoRangeCheckConst)(cons
 #endif
 }
 
-bool DYNAMIC_ARRAY_FUNCTION(isEmpty)(const DYNAMIC_ARRAY *darr) {
+DYNAMIC_ARRAY_CONST_METHOD(bool, isEmpty) {
     return darr->size == 0;
 }
 
-void DYNAMIC_ARRAY_FUNCTION(setValue)(DYNAMIC_ARRAY *darr, size_t index, const DYNAMIC_ARRAY_VALUE_TYPE *value) {
+DYNAMIC_ARRAY_METHOD(void, setValue, size_t index, const value_t *value) {
     if (index < darr->size)
         DYNAMIC_ARRAY_FUNCTION(setValueNoRangeCheck)(darr, index, value);
 }
 
-void DYNAMIC_ARRAY_FUNCTION(setValueNoRangeCheck)(DYNAMIC_ARRAY *darr, size_t index, const DYNAMIC_ARRAY_VALUE_TYPE *value) {
+DYNAMIC_ARRAY_METHOD(void, setValueNoRangeCheck, size_t index, const value_t *value) {
 #ifdef DYNAMIC_ARRAY_USER_DEFINED_VALUE_TYPE
     *DYNAMIC_ARRAY_FUNCTION(atNoRangeCheck)(darr, index) = *value;
 #else
@@ -125,17 +121,17 @@ void DYNAMIC_ARRAY_FUNCTION(setValueNoRangeCheck)(DYNAMIC_ARRAY *darr, size_t in
 #endif
 }
 
-void DYNAMIC_ARRAY_FUNCTION(popBack)(DYNAMIC_ARRAY *darr) {
+DYNAMIC_ARRAY_METHOD(void, popBack) {
     if (!DYNAMIC_ARRAY_FUNCTION(isEmpty)(darr))
         DYNAMIC_ARRAY_FUNCTION(resize)(darr, darr->size - 1);
 }
 
-void DYNAMIC_ARRAY_FUNCTION(pushBack)(DYNAMIC_ARRAY *darr, const DYNAMIC_ARRAY_VALUE_TYPE *value) {
+DYNAMIC_ARRAY_METHOD(void, pushBack, const value_t *value) {
     DYNAMIC_ARRAY_FUNCTION(resize)(darr, darr->size + 1);
     DYNAMIC_ARRAY_FUNCTION(setBackValue)(darr, value);
 }
 
-void DYNAMIC_ARRAY_FUNCTION(resize)(DYNAMIC_ARRAY *darr, size_t newSize) {
+DYNAMIC_ARRAY_METHOD(void, resize, size_t newSize) {
     darr->size = newSize;
     if (newSize > darr->maxSize) {
         darr->maxSize = darr->getMaxSize(newSize);
@@ -143,12 +139,12 @@ void DYNAMIC_ARRAY_FUNCTION(resize)(DYNAMIC_ARRAY *darr, size_t newSize) {
     }
 }
 
-void DYNAMIC_ARRAY_FUNCTION(setBackValue)(DYNAMIC_ARRAY *darr, const DYNAMIC_ARRAY_VALUE_TYPE *value) {
+DYNAMIC_ARRAY_METHOD(void, setBackValue, const value_t *value) {
     if (!DYNAMIC_ARRAY_FUNCTION(isEmpty)(darr))
         DYNAMIC_ARRAY_FUNCTION(setValueNoRangeCheck)(darr, darr->size - 1, value);
 }
 
-void DYNAMIC_ARRAY_FUNCTION(setFrontValue)(DYNAMIC_ARRAY *darr, const DYNAMIC_ARRAY_VALUE_TYPE *value) {
+DYNAMIC_ARRAY_METHOD(void, setFrontValue, const value_t *value) {
     if (!DYNAMIC_ARRAY_FUNCTION(isEmpty)(darr))
         DYNAMIC_ARRAY_FUNCTION(setValueNoRangeCheck)(darr, 0, value);
 }

@@ -5,7 +5,6 @@
 #include <stdbool.h>
 #include "auxillary_macros.h"
 
-typedef void (*ProcessItemFunc)(void *);
 typedef size_t (*GetMaxSizeFunc)(size_t currentSize);
 
 #define DEFAULT_DYNAMIC_ARRAY DynamicArray
@@ -35,50 +34,53 @@ typedef struct {
 
 #define DYNAMIC_ARRAY_FUNCTION(FUNC) CONCAT_MACROS(FUNC, DYNAMIC_ARRAY)
 
+#define DYNAMIC_ARRAY_METHOD(RETURN_TYPE, NAME, ...) DEFINE_METHOD(DYNAMIC_ARRAY *darr, RETURN_TYPE, DYNAMIC_ARRAY_FUNCTION(NAME), ##__VA_ARGS__)
+#define DYNAMIC_ARRAY_CONST_METHOD(RETURN_TYPE, NAME, ...) DEFINE_METHOD(const DYNAMIC_ARRAY *darr, RETURN_TYPE, DYNAMIC_ARRAY_FUNCTION(NAME), ##__VA_ARGS__)
+
 // basic methods
 #ifdef DYNAMIC_ARRAY_USER_DEFINED_VALUE_TYPE
-    void DYNAMIC_ARRAY_FUNCTION(init)(DYNAMIC_ARRAY *, size_t size, GetMaxSizeFunc getMaxSize);
+    DYNAMIC_ARRAY_METHOD(void, init, size_t size, GetMaxSizeFunc getMaxSize);
 #else
-    void DYNAMIC_ARRAY_FUNCTION(init)(DYNAMIC_ARRAY *, size_t size, size_t typeSize, GetMaxSizeFunc getMaxSize);
+    DYNAMIC_ARRAY_METHOD(void, init, size_t size, size_t typeSize, GetMaxSizeFunc getMaxSize);
 #endif
 
-void DYNAMIC_ARRAY_FUNCTION(term)(DYNAMIC_ARRAY *);
+DYNAMIC_ARRAY_METHOD(void, term);
 
 // value access
-DYNAMIC_ARRAY_VALUE_TYPE *DYNAMIC_ARRAY_FUNCTION(at)(DYNAMIC_ARRAY *, size_t index);
-DYNAMIC_ARRAY_VALUE_TYPE *DYNAMIC_ARRAY_FUNCTION(atNoRangeCheck)(DYNAMIC_ARRAY *, size_t index);
+DYNAMIC_ARRAY_METHOD(DYNAMIC_ARRAY_VALUE_TYPE *, at, size_t index);
+DYNAMIC_ARRAY_METHOD(DYNAMIC_ARRAY_VALUE_TYPE *, atNoRangeCheck, size_t index);
 
-const DYNAMIC_ARRAY_VALUE_TYPE *DYNAMIC_ARRAY_FUNCTION(atConst)(const DYNAMIC_ARRAY *, size_t index);
-const DYNAMIC_ARRAY_VALUE_TYPE *DYNAMIC_ARRAY_FUNCTION(atNoRangeCheckConst)(const DYNAMIC_ARRAY *, size_t index);
+DYNAMIC_ARRAY_CONST_METHOD(const DYNAMIC_ARRAY_VALUE_TYPE *, atConst, size_t index);
+DYNAMIC_ARRAY_CONST_METHOD(const DYNAMIC_ARRAY_VALUE_TYPE *, atNoRangeCheckConst, size_t index);
 
-DYNAMIC_ARRAY_VALUE_TYPE *DYNAMIC_ARRAY_FUNCTION(atFront)(DYNAMIC_ARRAY *);
-DYNAMIC_ARRAY_VALUE_TYPE *DYNAMIC_ARRAY_FUNCTION(atBack)(DYNAMIC_ARRAY *);
+DYNAMIC_ARRAY_METHOD(DYNAMIC_ARRAY_VALUE_TYPE *, atFront);
+DYNAMIC_ARRAY_METHOD(DYNAMIC_ARRAY_VALUE_TYPE *, atBack);
 
-const DYNAMIC_ARRAY_VALUE_TYPE *DYNAMIC_ARRAY_FUNCTION(atFrontConst)(const DYNAMIC_ARRAY *);
-const DYNAMIC_ARRAY_VALUE_TYPE *DYNAMIC_ARRAY_FUNCTION(atBackConst)(const DYNAMIC_ARRAY *);
+DYNAMIC_ARRAY_CONST_METHOD(const DYNAMIC_ARRAY_VALUE_TYPE *, atFrontConst);
+DYNAMIC_ARRAY_CONST_METHOD(const DYNAMIC_ARRAY_VALUE_TYPE *, atBackConst);
 
 // getting
-size_t DYNAMIC_ARRAY_FUNCTION(getSize)(const DYNAMIC_ARRAY *);
-size_t DYNAMIC_ARRAY_FUNCTION(getMaxSize)(const DYNAMIC_ARRAY *);
+DYNAMIC_ARRAY_CONST_METHOD(size_t, getSize);
+DYNAMIC_ARRAY_CONST_METHOD(size_t, getMaxSize);
 
-size_t DYNAMIC_ARRAY_FUNCTION(getByteSize)(const DYNAMIC_ARRAY *);
-size_t DYNAMIC_ARRAY_FUNCTION(getMaxByteSize)(const DYNAMIC_ARRAY *);
+DYNAMIC_ARRAY_CONST_METHOD(size_t, getByteSize);
+DYNAMIC_ARRAY_CONST_METHOD(size_t, getMaxByteSize);
 
-bool DYNAMIC_ARRAY_FUNCTION(isEmpty)(const DYNAMIC_ARRAY *);
+DYNAMIC_ARRAY_CONST_METHOD(bool, isEmpty);
 
 // setting
-void DYNAMIC_ARRAY_FUNCTION(resize)(DYNAMIC_ARRAY *, size_t newSize);
+DYNAMIC_ARRAY_METHOD(void, resize, size_t newSize);
 
-void DYNAMIC_ARRAY_FUNCTION(setValue)(DYNAMIC_ARRAY *, size_t index, const DYNAMIC_ARRAY_VALUE_TYPE *value);
-void DYNAMIC_ARRAY_FUNCTION(setValueNoRangeCheck)(DYNAMIC_ARRAY *, size_t index, const DYNAMIC_ARRAY_VALUE_TYPE *value);
+DYNAMIC_ARRAY_METHOD(void, setValue, size_t index, const DYNAMIC_ARRAY_VALUE_TYPE *value);
+DYNAMIC_ARRAY_METHOD(void, setValueNoRangeCheck, size_t index, const DYNAMIC_ARRAY_VALUE_TYPE *value);
 
-void DYNAMIC_ARRAY_FUNCTION(setFrontValue)(DYNAMIC_ARRAY *, const DYNAMIC_ARRAY_VALUE_TYPE *value);
-void DYNAMIC_ARRAY_FUNCTION(setBackValue)(DYNAMIC_ARRAY *, const DYNAMIC_ARRAY_VALUE_TYPE *value);
+DYNAMIC_ARRAY_METHOD(void, setFrontValue, const DYNAMIC_ARRAY_VALUE_TYPE *value);
+DYNAMIC_ARRAY_METHOD(void, setBackValue, const DYNAMIC_ARRAY_VALUE_TYPE *value);
 
-void DYNAMIC_ARRAY_FUNCTION(pushBack)(DYNAMIC_ARRAY *, const DYNAMIC_ARRAY_VALUE_TYPE *value);
-void DYNAMIC_ARRAY_FUNCTION(popBack)(DYNAMIC_ARRAY *);
+DYNAMIC_ARRAY_METHOD(void, pushBack, const DYNAMIC_ARRAY_VALUE_TYPE *value);
+DYNAMIC_ARRAY_METHOD(void, popBack);
 
 // special
-void DYNAMIC_ARRAY_FUNCTION(map)(DYNAMIC_ARRAY *, ProcessItemFunc func);
+DYNAMIC_ARRAY_METHOD(void, map, void (*func)(DYNAMIC_ARRAY_VALUE_TYPE *));
 
 #endif

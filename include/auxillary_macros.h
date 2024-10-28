@@ -6,6 +6,8 @@
 #define CONCAT(LEFT, RIGHT) LEFT ## RIGHT
 #define CONCAT_MACROS(LEFT, RIGHT) CONCAT(LEFT, RIGHT)
 
+#define DEFINE_METHOD(OBJECT, RETURN_TYPE, NAME, ...) RETURN_TYPE NAME (OBJECT, ##__VA_ARGS__)
+
 #define MAX(A, B) ((A) > (B) ? (A) : (B))
 
 #endif
