@@ -1,0 +1,71 @@
+#ifndef DYNAMIC_ARRAY_OBJECT_H
+#define DYNAMIC_ARRAY_OBJECT_H
+
+#include "DynamicArray.h"
+#include <stdbool.h>
+
+#define DYNAMIC_ARRAY_OBJECT_METHOD(RETURN_TYPE, NAME, ...) DEFINE_METHOD(DYNAMIC_ARRAY *darrObj, RETURN_TYPE, (*NAME), ##__VA_ARGS__)
+#define DYNAMIC_ARRAY_OBJECT_CONST_METHOD(RETURN_TYPE, NAME, ...) DEFINE_METHOD(const DYNAMIC_ARRAY *darrObj, RETURN_TYPE, (*NAME), ##__VA_ARGS__)
+
+#define DYNAMIC_ARRAY_OBJECT CONCAT_MACROS(DYNAMIC_ARRAY, _object)
+
+#define DYNAMIC_ARRAY_OBJECT_METHODS CONCAT_MACROS(DYNAMIC_ARRAY_OBJECT, _methods)
+struct DYNAMIC_ARRAY_OBJECT_METHODS {
+    // basic methods
+    DYNAMIC_ARRAY_OBJECT_METHOD(void, term);
+
+    // value access
+    DYNAMIC_ARRAY_OBJECT_METHOD(DYNAMIC_ARRAY_VALUE_TYPE *, at, size_t index);
+    DYNAMIC_ARRAY_OBJECT_METHOD(DYNAMIC_ARRAY_VALUE_TYPE *, atNoRangeCheck, size_t index);
+
+    DYNAMIC_ARRAY_OBJECT_CONST_METHOD(const DYNAMIC_ARRAY_VALUE_TYPE *, atConst, size_t index);
+    DYNAMIC_ARRAY_OBJECT_CONST_METHOD(const DYNAMIC_ARRAY_VALUE_TYPE *, atNoRangeCheckConst, size_t index);
+
+    DYNAMIC_ARRAY_OBJECT_METHOD(DYNAMIC_ARRAY_VALUE_TYPE *, front);
+    DYNAMIC_ARRAY_OBJECT_METHOD(DYNAMIC_ARRAY_VALUE_TYPE *, back);
+
+    DYNAMIC_ARRAY_OBJECT_CONST_METHOD(const DYNAMIC_ARRAY_VALUE_TYPE *, frontConst);
+    DYNAMIC_ARRAY_OBJECT_CONST_METHOD(const DYNAMIC_ARRAY_VALUE_TYPE *, backConst);
+
+    // getting
+    DYNAMIC_ARRAY_OBJECT_CONST_METHOD(size_t, size);
+    DYNAMIC_ARRAY_OBJECT_CONST_METHOD(size_t, maxSize);
+
+    DYNAMIC_ARRAY_OBJECT_CONST_METHOD(size_t, byteSize);
+    DYNAMIC_ARRAY_OBJECT_CONST_METHOD(size_t, maxByteSize);
+
+    DYNAMIC_ARRAY_OBJECT_CONST_METHOD(bool, isEmpty);
+
+    // setting
+    DYNAMIC_ARRAY_OBJECT_METHOD(void, resize, size_t newSize);
+
+    DYNAMIC_ARRAY_OBJECT_METHOD(void, set, size_t index, const DYNAMIC_ARRAY_VALUE_TYPE *value);
+    DYNAMIC_ARRAY_OBJECT_METHOD(void, setNoRangeCheck, size_t index, const DYNAMIC_ARRAY_VALUE_TYPE *value);
+
+    DYNAMIC_ARRAY_OBJECT_METHOD(void, setFront, const DYNAMIC_ARRAY_VALUE_TYPE *value);
+    DYNAMIC_ARRAY_OBJECT_METHOD(void, setBack, const DYNAMIC_ARRAY_VALUE_TYPE *value);
+
+    DYNAMIC_ARRAY_OBJECT_METHOD(void, pushBack, const DYNAMIC_ARRAY_VALUE_TYPE *value);
+    DYNAMIC_ARRAY_OBJECT_METHOD(void, popBack);
+
+    // special
+    DYNAMIC_ARRAY_OBJECT_METHOD(void, map, PROCESS_ITEM_FUNC(func));
+};
+
+extern struct DYNAMIC_ARRAY_OBJECT_METHODS CONCAT_MACROS(methods_, DYNAMIC_ARRAY);
+
+typedef struct {
+    DYNAMIC_ARRAY darr;
+    const struct CONCAT_MACROS(DYNAMIC_ARRAY_OBJECT, _methods) *methods;
+} DYNAMIC_ARRAY_OBJECT;
+
+#ifdef DYNAMIC_ARRAY_USER_DEFINED_VALUE_TYPE
+    void CONCAT_MACROS(init, DYNAMIC_ARRAY_OBJECT)(DYNAMIC_ARRAY_OBJECT *obj, size_t size, GetMaxSizeFunc);
+#else
+    void CONCAT_MACROS(init, DYNAMIC_ARRAY_OBJECT)(DYNAMIC_ARRAY_OBJECT *obj, size_t size, size_t typeSize, GetMaxSizeFunc);
+#endif
+
+#define DARR_CALL(OBJ, METHOD, ...) OBJ.methods->METHOD(&OBJ.darr, ##__VA_ARGS__)
+#define DARR_CALL_PTR(OBJ, METHOD, ...) OBJ->methods->METHOD(&OBJ->darr, ##__VA_ARGS__)
+
+#endif

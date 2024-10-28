@@ -10,7 +10,7 @@
 #undef DYNAMIC_ARRAY_H
 
 #define DYNAMIC_ARRAY_VALUE_TYPE string
-#include "DynamicArray.h"
+#include "DynamicArray_object.h"
 #undef DYNAMIC_ARRAY_VALUE_TYPE
 #undef DYNAMIC_ARRAY_H
 
@@ -27,8 +27,8 @@ int main(int argc, char **argv) {
     DynamicArray_int hashes;
     initDynamicArray_int(&hashes, 0, getMaxSizeDefaultImpl);
 
-    DynamicArray_string strings;
-    initDynamicArray_string(&strings, 0, getMaxSizeDefaultImpl);
+    DynamicArray_string_object strings;
+    initDynamicArray_string_object(&strings, 0, getMaxSizeDefaultImpl);
 
     DynamicArray sineArray;
     initDynamicArray(&sineArray, 0, sizeof(double), getMaxSizeDefaultImpl);
@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 
         pushBackDynamicArray_int(&hashes, &h);
         pushBackDynamicArray(&sineArray, &s);
-        pushBackDynamicArray_string(&strings, argv + i);
+        DARR_CALL(strings, pushBack, argv + i);
 
         printf("iter %d:\n", i);
         
@@ -50,21 +50,21 @@ int main(int argc, char **argv) {
         mapDynamicArray(&sineArray, printDouble);
         putchar('\n');
 
-        mapDynamicArray_string(&strings, printString);
+        DARR_CALL(strings, map, printString);
         putchar('\n');
     }
 
     puts("----- clean -----");
     for (int i = 0; !isEmptyDynamicArray_int(&hashes); ++i) {
         popBackDynamicArray_int(&hashes);
-        popBackDynamicArray_string(&strings);
+        DARR_CALL(strings, popBack);
 
         printf("iter %d:\n", i);
 
         mapDynamicArray_int(&hashes, printInt);
         putchar('\n');
 
-        mapDynamicArray_string(&strings, printString);
+        DARR_CALL(strings, map, printString);
         putchar('\n');
     }
 
@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
 
     termDynamicArray_int(&hashes);
     termDynamicArray(&sineArray);
-    termDynamicArray_string(&strings);
+    DARR_CALL(strings, term);
 
     return 0;
 }

@@ -20,6 +20,8 @@ typedef size_t (*GetMaxSizeFunc)(size_t currentSize);
     #define DYNAMIC_ARRAY DEFAULT_DYNAMIC_ARRAY
 #endif
 
+#define PROCESS_ITEM_FUNC(NAME) void (*NAME)(DYNAMIC_ARRAY_VALUE_TYPE *)
+
 typedef struct {
     size_t size;
     size_t maxSize;
@@ -81,6 +83,6 @@ DYNAMIC_ARRAY_METHOD(void, pushBack, const DYNAMIC_ARRAY_VALUE_TYPE *value);
 DYNAMIC_ARRAY_METHOD(void, popBack);
 
 // special
-DYNAMIC_ARRAY_METHOD(void, map, void (*func)(DYNAMIC_ARRAY_VALUE_TYPE *));
+DYNAMIC_ARRAY_METHOD(void, map, PROCESS_ITEM_FUNC(func));
 
 #endif
